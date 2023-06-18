@@ -128,7 +128,7 @@ echo -e "${SUCCESS_LABEL}Requested Meilisearch version: ${BPINK}$meilisearch_ver
 # Current Meilisearch version
 # FIXME: Should work without master key provided see issue #44
 current_meilisearch_version=$(
-    curl -X GET 'http://34.27.34.205/version' --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" -s --show-error |
+    curl -X GET 'http://localhost:7700/version' --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" -s --show-error |
         cut -d '"' -f 12
 )
 
@@ -142,7 +142,7 @@ echo -e "${SUCCESS_LABEL}Current running Meilisearch version: ${BPINK}$current_m
 
 # Create dump for migration in case of incompatible versions
 echo -e "${INFO_LABEL}Creation of a dump in case new version does not have compatibility with the current Meilisearch."
-dump_return=$(curl -X POST 'http://34.27.34.205/dumps' --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s)
+dump_return=$(curl -X POST 'http://localhost:7700/dumps' --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s)
 
 # Check if curl request was successfull.
 check_last_exit_status $? "Dump creation 'POST /dumps' request failed."
@@ -155,7 +155,7 @@ if echo $current_meilisearch_version | grep -E "^[0].2[01234567]{1}.[0-9]+.*" -q
     # Wait for Dump to be created
     while true
     do
-        curl -X GET "http://34.27.34.205/dumps/$dump_id/status" \
+        curl -X GET "http://localhost:7700/dumps/$dump_id/status" \
         --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s -i > curl_dump_creation_response
         cat curl_dump_creation_response | grep "200 OK" -q
         check_last_exit_status $? "Request to /dumps/$dump_id/status failed" delete_temporary_files
@@ -178,7 +178,7 @@ else
 
     while true
     do
-        curl -X GET "http://34.27.34.205/tasks/$task_uid" \
+        curl -X GET "http://localhost:7700/tasks/$task_uid" \
         --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s -i > curl_dump_creation_response
         cat curl_dump_creation_response | grep "200 OK" -q
         check_last_exit_status $? "Request to /tasks/$task_uid failed"
@@ -273,7 +273,7 @@ else
     ## Wait for pending dump indexation
     while true
     do
-    	curl -X GET 'http://34.27.34.205/health' \
+    	curl -X GET 'http://localhost:7700/health' \
         --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s -i > curl_dump_index_response
 	cat curl_dump_index_response | grep "200 OK" -q
 	check_last_exit_status $? "Request to /health failed"
