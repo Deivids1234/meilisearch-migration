@@ -128,7 +128,7 @@ echo -e "${SUCCESS_LABEL}Requested Meilisearch version: ${BPINK}$meilisearch_ver
 # Current Meilisearch version
 # FIXME: Should work without master key provided see issue #44
 current_meilisearch_version=$(
-    curl -X GET 'http://localhost:7700/version' --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" -s --show-error |
+    curl -X GET 'http://localhost:7700/version' --header "Authorization: Bearer MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" -s --show-error |
         cut -d '"' -f 12
 )
 
@@ -142,7 +142,7 @@ echo -e "${SUCCESS_LABEL}Current running Meilisearch version: ${BPINK}$current_m
 
 # Create dump for migration in case of incompatible versions
 echo -e "${INFO_LABEL}Creation of a dump in case new version does not have compatibility with the current Meilisearch."
-dump_return=$(curl -X POST 'http://localhost:7700/dumps' --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s)
+dump_return=$(curl -X POST 'http://localhost:7700/dumps' --header "Authorization: Bearer MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s)
 
 # Check if curl request was successfull.
 check_last_exit_status $? "Dump creation 'POST /dumps' request failed."
@@ -156,7 +156,7 @@ if echo $current_meilisearch_version | grep -E "^[0].2[01234567]{1}.[0-9]+.*" -q
     while true
     do
         curl -X GET "http://localhost:7700/dumps/$dump_id/status" \
-        --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s -i > curl_dump_creation_response
+        --header "Authorization: Bearer MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s -i > curl_dump_creation_response
         cat curl_dump_creation_response | grep "200 OK" -q
         check_last_exit_status $? "Request to /dumps/$dump_id/status failed" delete_temporary_files
         if cat curl_dump_creation_response | grep '"status":"done"' -q; then
@@ -179,7 +179,7 @@ else
     while true
     do
         curl -X GET "http://localhost:7700/tasks/$task_uid" \
-        --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s -i > curl_dump_creation_response
+        --header "Authorization: Bearer MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s -i > curl_dump_creation_response
         cat curl_dump_creation_response | grep "200 OK" -q
         check_last_exit_status $? "Request to /tasks/$task_uid failed"
         if cat curl_dump_creation_response | grep '"status":"succeeded"' -q; then # | awk -F\: '{print $2}'
@@ -250,7 +250,7 @@ cp meilisearch /usr/bin/meilisearch
 # Run Meilisearch
 # TODO: `import-dump` may change name for v1, it should be added in the integration-guide issue
 # https://github.com/meilisearch/meilisearch/issues/3132
-./meilisearch --db-path /var/lib/meilisearch/data.ms --env production --import-dump "/var/opt/meilisearch/dumps/$dump_id.dump" --master-key $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm 2>logs &
+./meilisearch --db-path /var/lib/meilisearch/data.ms --env production --import-dump "/var/opt/meilisearch/dumps/$dump_id.dump" --master-key MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm 2>logs &
 echo -e "${INFO_LABEL}Run local $meilisearch_version binary importing the dump and creating the new data.ms."
 
 sleep 2
@@ -274,7 +274,7 @@ else
     while true
     do
     	curl -X GET 'http://localhost:7700/health' \
-        --header "Authorization: Bearer $MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s -i > curl_dump_index_response
+        --header "Authorization: Bearer MzE2OTAzNzYxOTc0MmMwYzlmMzI5ZDBm" --show-error -s -i > curl_dump_index_response
 	cat curl_dump_index_response | grep "200 OK" -q
 	check_last_exit_status $? "Request to /health failed"
 	if cat curl_dump_index_response | grep '"status":"available"' -q; then
